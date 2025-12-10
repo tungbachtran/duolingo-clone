@@ -1,0 +1,30 @@
+// src/App.tsx hoặc router configuration file
+import { BrowserRouter } from "react-router-dom";
+import { IndexRoutes } from "./routes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { UserProvider } from "./context/user.context";
+import { ProgressProvider } from "./context/progress.context";
+import { CourseProvider } from "./features/course/context/course.context";
+import { UserProgressProvider } from "./context/user-progress.context";
+
+function App() {
+  const queryClient = new QueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <CourseProvider>
+      <UserProvider>
+        <ProgressProvider>
+        <UserProgressProvider>
+        
+          <BrowserRouter>
+            <IndexRoutes />
+          </BrowserRouter>
+          </UserProgressProvider>
+        </ProgressProvider>
+      </UserProvider>
+      </CourseProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
