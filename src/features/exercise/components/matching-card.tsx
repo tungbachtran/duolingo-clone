@@ -12,7 +12,7 @@ interface Props {
   isCorrect: boolean | null;
 }
 
-const MatchingCard = ({ question, matches, onMatchChange, isChecking, isCorrect }: Props) => {
+const MatchingCard = ({ question,  onMatchChange, isChecking, isCorrect }: Props) => {
   const [leftItems, setLeftItems] = useState<MatchingPair[]>([]);
   const [rightItems, setRightItems] = useState<MatchingPair[]>([]);
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);

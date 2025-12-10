@@ -1,7 +1,7 @@
 // src/features/dashboard/components/sidebar/sidebar.tsx
 import { SidebarItem } from './sidebar-item';
 import { SIDEBAR_MENU_ITEMS } from '../../constants';
-import { Crown } from 'lucide-react';
+
 
 interface SidebarProps {
   courseId?: string;

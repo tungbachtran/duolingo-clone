@@ -5,7 +5,7 @@ import { getUnitAndLesson } from "../services";
 import { LearningPath } from "../components/lesson-path/lesson-path";
 import { Sidebar } from "../components/sidebar/sidebar";
 import { Header } from "../components/header/header";
-import { RightPanel } from "../components/right-panel/right-panel";
+
 import { useQuery } from "@tanstack/react-query";
 
 export const DashboardPage = () => {

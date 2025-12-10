@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/context/user.context';
 import { ROUTE } from '@/features/authentication/constants';
-import {  Flame, Heart, Bell, Settings, FlaskConical } from 'lucide-react';
+import {  Flame, Heart, FlaskConical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const Header = () => {
