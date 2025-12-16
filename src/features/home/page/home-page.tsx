@@ -3,7 +3,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { useUserProgress } from "@/context/user-progress.context";
 import { useUser } from "@/context/user.context";
 import { ROUTE } from "@/features/authentication/constants";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const HomePage = ()=>{

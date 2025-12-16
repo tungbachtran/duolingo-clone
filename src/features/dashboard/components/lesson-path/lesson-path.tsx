@@ -1,5 +1,5 @@
 // src/features/dashboard/components/lesson-path/lesson-path.tsx
-import React, { useState, useEffect, useRef } from "react";
+import  { useState, useEffect, useRef } from "react";
 
 import { CustomTooltip } from "@/components/custom-tooltip";
 import { Star, Lock, Check, BookOpen } from "lucide-react";

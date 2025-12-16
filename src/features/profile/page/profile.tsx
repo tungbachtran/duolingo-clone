@@ -14,13 +14,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { useNavigate } from 'react-router-dom';
+
 
 import { uploadFile } from '@/service/file.service';
 import { getProfile, updateProfile, type Profile } from '../services';
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
+
   const queryClient = useQueryClient();
 
   // ===== UI MODE =====
