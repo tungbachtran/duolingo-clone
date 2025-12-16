@@ -1,5 +1,5 @@
-// src/features/dashboard/constants.ts
-import {   BookOpen, Trophy,  User,  Target } from 'lucide-react';
+
+import {   BookOpen, Trophy,  User,  Target, LogOut, Brain } from 'lucide-react';
 
 export interface MenuItem {
   id: string;
@@ -12,20 +12,26 @@ export interface MenuItem {
 }
 
 export const SIDEBAR_MENU_ITEMS: MenuItem[] = [
- 
+  { 
+    id: 'exercise', 
+    label: 'LUYỆN TẬP', 
+    icon: Brain , 
+    dynamicPath: (courseId: string) => `/dashboard/course/${courseId}`,
+    color: 'text-blue-400' 
+  },
  
   { 
     id: 'lesson', 
-    label: 'LUYỆN TẬP', 
+    label: 'LÍ THUYẾT', 
     icon: BookOpen, 
-    dynamicPath: (courseId: string) => `/course/${courseId}/units`,
+    dynamicPath: (courseId: string) => `/dashboard/course/${courseId}/units`,
     color: 'text-blue-400' 
   },
   { 
     id: 'leaderboard', 
     label: 'BẢNG XẾP HẠNG', 
     icon: Trophy, 
-    path: '/leaderboard', 
+    path: '/dashboard/leaderboard', 
     color: 'text-yellow-500' 
   },
  
@@ -33,7 +39,7 @@ export const SIDEBAR_MENU_ITEMS: MenuItem[] = [
     id: 'mistake', 
     label: 'Lỗi sai', 
     icon: Target, 
-    path: '/user/mistakes', 
+    path: '/dashboard/user/mistakes', 
     color: 'text-gray-500' 
   },
  
@@ -41,14 +47,14 @@ export const SIDEBAR_MENU_ITEMS: MenuItem[] = [
     id: 'profile', 
     label: 'HỒ SƠ', 
     icon: User, 
-    path: '/profile', 
+    path: '/dashboard/user/profile', 
     color: 'text-gray-500' 
   },
 
   { 
     id: 'logout', 
     label: 'Đăng xuất', 
-    icon: User, 
+    icon: LogOut, 
     color: 'text-gray-500' 
   },
   

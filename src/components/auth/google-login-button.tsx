@@ -14,13 +14,17 @@ export const GoogleLoginButton: React.FC = () => {
       onClick={handleLogin}
       style={{
         padding: '8px 16px',
-        borderRadius: 4,
+        borderRadius: 10,
         border: '1px solid #ddd',
         display: 'flex',
         alignItems: 'center',
+        justifyContent:'center',
         gap: 8,
         cursor: 'pointer',
         background: '#fff',
+        width:'100%',
+        height:'48px',
+        
       }}
     >
       <img

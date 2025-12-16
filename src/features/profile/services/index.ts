@@ -15,6 +15,7 @@ export interface Role {
     isActive: boolean;
     streakCount: number;
     lastActiveAt: string;
+    avatarImage:string;
     experiencePoint: number;
     heartCount: number;
     roleId: Role;
@@ -26,6 +27,13 @@ export interface Role {
       data: Profile;
     };
   }
+
+  export interface UpdateProfileForm{
+    password?:string,
+    fullName?:string,
+    avatarImage?:string
+
+  }
   
   export const getProfile = async () => {
     const res = await axiosInstance.get<ProfileResponse>(apiConstant.PROFILE, {
@@ -33,3 +41,8 @@ export interface Role {
     });
     return res.data.value.data;
   };  
+  export const updateProfile = async (payload: UpdateProfileForm) => {
+    const { data } = await axiosInstance.patch('/api/users/profile', payload);
+    return data;
+  };
+

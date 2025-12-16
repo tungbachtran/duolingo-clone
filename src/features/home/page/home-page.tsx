@@ -1,14 +1,26 @@
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner";
 import { useUserProgress } from "@/context/user-progress.context";
+import { useUser } from "@/context/user.context";
 import { ROUTE } from "@/features/authentication/constants";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const HomePage = ()=>{
-    const navigate = useNavigate();
-    const {courseId} = useUserProgress();
-    if(courseId){
-        navigate(ROUTE.DASHBOARD.replace(":courseId", courseId));
-        return
+  const navigate = useNavigate();
+  const {courseId,isFetching,} = useUserProgress();
+ const {user} = useUser()
+
+    if (courseId && user) navigate(`/dashboard/course/${courseId}`, { replace: true });
+
+  
+
+    if(isFetching){
+      return(
+        <>
+        <div className="w-100 m-auto"><Spinner/> <span>Đang tải</span></div>
+        </>
+      )
     }
     return(
         <>

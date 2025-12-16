@@ -4,12 +4,15 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trophy, Clock, Target, XCircle } from 'lucide-react';
 import { useProgress } from '@/context/progress.context';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateUserProgress, type UpdateUserProgressForm } from '@/features/dashboard/services';
-import { postUserMistake, type PostUserMistakeForm } from '@/wrong-answer/service';
+
 import { useNavigate } from 'react-router-dom';
 import { useUserProgress } from '@/context/user-progress.context';
-import { ROUTE } from '@/features/authentication/constants';
+
+import { useUser } from '@/context/user.context';
+import { useCurrentCourseId } from '@/context/current-course-id.context';
+import { postUserMistake, type PostUserMistakeForm } from '@/features/wrong-answer/service';
 
 interface Props {
   result: ExerciseResult;
@@ -18,17 +21,21 @@ interface Props {
 }
 
 const ResultScreen = ({ result, onRetry }: Props) => {
+
   const percentage = Math.round((result.correctAnswers / result.totalQuestions) * 100);
   const minutes = Math.floor(result.totalTime / 60000);
   const seconds = Math.floor((result.totalTime % 60000) / 1000);
   const navigate = useNavigate();
   const{courseId} = useUserProgress();
-
+  const{state:currentCourseId} = useCurrentCourseId();
+  const queryClient = useQueryClient();
   const {state } = useProgress();
+  const {refetchUser} = useUser();
+  
   const form:UpdateUserProgressForm = {
     lessonId:state.lessonId,
     unitId:state.unitId,
-    courseId:courseId,
+    courseId:currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId,
     experiencePoint:state.experiencePoint,
     heartCount:state.heartCount
   }
@@ -37,6 +44,8 @@ const ResultScreen = ({ result, onRetry }: Props) => {
   const mistakeMutation = useMutation({mutationFn:(form:PostUserMistakeForm) => postUserMistake(form)})
   const handleCompleteLesson = async ()=>{
     await mutate(form)
+    queryClient.invalidateQueries({queryKey:['unitsAndLessons']});
+    refetchUser()
     if(result.incorrectQuestions.length > 0){
       const wrongAnswer = result.incorrectQuestions.map(item=>item._id);
       const form ={
@@ -44,7 +53,9 @@ const ResultScreen = ({ result, onRetry }: Props) => {
       }
       mistakeMutation.mutate(form)
     }
-    { if (courseId) { navigate(ROUTE.DASHBOARD.replace(":courseId", courseId)); } }
+    { if (currentCourseId.courseId.length > 0) { navigate(`/dashboard/course/${currentCourseId.courseId}`); } else {
+      navigate(`/dashboard/course/${courseId}`);
+    } }
   }
   const getPerformanceMessage = () => {
     if (percentage === 100) return { text: 'Hoàn hảo!', color: 'text-yellow-600', emoji: '🏆' };

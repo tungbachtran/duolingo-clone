@@ -1,24 +1,123 @@
-// pages/profile.tsx
-import { useQuery } from '@tanstack/react-query';
-import { getProfile } from '../services';
-import type { Profile } from '../services'; 
-import { Loader2, Heart, Flame, Award, Mail, CheckCircle2, XCircle } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import {
+  Loader2,
+  Mail,
+  Award,
+  Flame,
+  Heart,
+  CheckCircle2,
+  XCircle,
+  Pencil,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 
+import { uploadFile } from '@/service/file.service';
+import { getProfile, updateProfile, type Profile } from '../services';
+
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const { data: profile, isLoading, isError, refetch, isFetching } = useQuery<Profile>({
+  // ===== UI MODE =====
+  const [isEditing, setIsEditing] = useState(false);
+
+  // ===== FORM STATE =====
+  const [fullName, setFullName] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // ===== QUERY =====
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
+    isFetching,
+  } = useQuery<Profile>({
     queryKey: ['profile'],
     queryFn: getProfile,
   });
 
+  // ===== MUTATIONS =====
+  const uploadAvatarMutation = useMutation({
+    mutationFn: uploadFile,
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      resetForm();
+      setIsEditing(false);
+    },
+  });
+
+  // ===== HELPERS =====
+  const resetForm = () => {
+    setAvatarFile(null);
+    setAvatarPreview(null);
+    setShowChangePassword(false);
+    setPassword('');
+    setConfirmPassword('');
+    if (profile) {
+      setFullName(profile.fullName);
+    }
+  };
+
+  // ===== HANDLERS =====
+  const handleEdit = () => {
+    if (!profile) return;
+    setIsEditing(true);
+    setFullName(profile.fullName);
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    setIsEditing(false);
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const handleSaveProfile = async () => {
+    let avatarUrl: string | undefined;
+
+    if (avatarFile) {
+      const uploadRes = await uploadAvatarMutation.mutateAsync(avatarFile);
+      avatarUrl = uploadRes.url;
+    }
+
+    if (showChangePassword) {
+      if (!password || password !== confirmPassword) {
+        alert('Mật khẩu nhập lại không khớp');
+        return;
+      }
+    }
+
+    updateProfileMutation.mutate({
+      fullName,
+      avatarImage: avatarUrl,
+      password: showChangePassword ? password : undefined,
+    });
+  };
+
+  // ===== UI STATES =====
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-sky-50 to-white">
+      <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-10 h-10 animate-spin text-sky-500" />
       </div>
     );
@@ -26,13 +125,8 @@ const ProfilePage = () => {
 
   if (isError || !profile) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-red-50 to-white">
-        <p className="text-lg font-semibold text-red-600 mb-2">
-          Không tải được thông tin hồ sơ
-        </p>
-        <p className="text-sm text-gray-500 mb-4">
-          Vui lòng kiểm tra kết nối và thử lại.
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <p className="text-red-600 mb-3">Không tải được hồ sơ</p>
         <Button onClick={() => refetch()}>
           {isFetching && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           Thử lại
@@ -46,150 +140,167 @@ const ProfilePage = () => {
     locale: vi,
   });
 
+  // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-sky-50">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Hồ sơ của bạn</h1>
+    <div className="min-h-screen ">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+
+        {/* ===== PROFILE CARD ===== */}
+        <div className="bg-white rounded-xl border p-6 space-y-4">
+
+          {/* AVATAR */}
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
+              {avatarPreview ? (
+                <img src={avatarPreview} className="w-full h-full object-cover" />
+              ) : profile.avatarImage ? (
+                <img src={profile.avatarImage} className="w-full h-full object-cover" />
+              ) : (
+                <div className="flex items-center justify-center h-full text-2xl font-bold">
+                  {profile.fullName.charAt(0)}
+                </div>
+              )}
+            </div>
+
+            {isEditing && (
+              <Input type="file" accept="image/*" onChange={handleAvatarChange} />
+            )}
+          </div>
+
+          {/* FULL NAME */}
+          {isEditing ? (
+            <Input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Họ và tên"
+            />
+          ) : (
+            <h2 className="text-xl font-semibold">{profile.fullName}</h2>
+          )}
+
+          {/* META */}
+          <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+            <span className="flex items-center">
+              <Mail className="w-4 h-4 mr-1" />
+              {profile.email}
+            </span>
+
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs ${
+                profile.isActive
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              {profile.isActive ? (
+                <span className="flex items-center">
+                  <CheckCircle2 className="w-3 h-3 mr-1" /> Hoạt động
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <XCircle className="w-3 h-3 mr-1" /> Không hoạt động
+                </span>
+              )}
+            </span>
+          </div>
+
+          <p className="text-xs text-gray-500">
+            Hoạt động gần nhất: {lastActiveText}
+          </p>
+
+          {/* CHANGE PASSWORD */}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
+            onClick={() => setShowChangePassword(!showChangePassword)}
           >
-            {isFetching && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Làm mới
+            Đổi mật khẩu
           </Button>
-        </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Card thông tin user */}
-        <div className="bg-white rounded-2xl shadow-sm border p-4 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            {/* Avatar đơn giản lấy chữ cái đầu */}
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-indigo-500 flex items-center justify-center text-2xl font-bold text-white shadow-md">
-              {profile.fullName.charAt(0).toUpperCase()}
+          {showChangePassword && (
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="Mật khẩu mới"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Input
+                type="password"
+                placeholder="Nhập lại mật khẩu mới"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+  
             </div>
+          )}
 
-            <div>
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900">
-                {profile.fullName}
-              </h2>
-              <div className="flex flex-wrap items-center gap-2 mt-1">
-                <span className="inline-flex items-center text-xs text-gray-600">
-                  <Mail className="w-3 h-3 mr-1" />
-                  {profile.email}
-                </span>
-                <span className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-medium">
-                  {profile.roleId?.name || 'User'}
-                </span>
-                <span
-                  className={`inline-flex items-center text-[11px] px-2 py-0.5 rounded-full ${
-                    profile.isActive
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-gray-100 text-gray-500'
-                  }`}
+          {/* ACTIONS */}
+          <div className="flex gap-2">
+            {!isEditing ? (
+              <Button onClick={handleEdit} variant="outline">
+                <Pencil className="w-4 h-4 mr-1" />
+                Chỉnh sửa thông tin
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={handleSaveProfile}
+                  disabled={
+                    uploadAvatarMutation.isPending ||
+                    updateProfileMutation.isPending
+                  }
+                  className="bg-sky-500 hover:bg-sky-600"
                 >
-                  {profile.isActive ? (
-                    <>
-                      <CheckCircle2 className="w-3 h-3 mr-1" />
-                      Đang hoạt động
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-3 h-3 mr-1" />
-                      Không hoạt động
-                    </>
+                  {(uploadAvatarMutation.isPending ||
+                    updateProfileMutation.isPending) && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   )}
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-gray-500">
-                Hoạt động gần nhất: {lastActiveText}
-              </p>
-            </div>
-          </div>
+                  Lưu
+                </Button>
 
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/leaderboard')}
-            >
-              <Award className="w-4 h-4 mr-1" />
-              Xem bảng xếp hạng
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => navigate('/courses')}
-              className="bg-sky-500 hover:bg-sky-600"
-            >
-              Luyện tập ngay
-            </Button>
+                <Button variant="outline" onClick={handleCancel}>
+                  Hủy
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Card thống kê */}
+        {/* ===== STATS ===== */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* XP */}
-          <div className="bg-white rounded-xl shadow-sm border p-3 md:p-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Kinh nghiệm</span>
-              <Award className="w-4 h-4 text-yellow-500" />
-            </div>
-            <p className="text-xl md:text-2xl font-bold text-gray-900">
-              {profile.experiencePoint}
-            </p>
-            <p className="text-[11px] text-gray-500">
-              Tích lũy qua các bài tập đã hoàn thành
-            </p>
-          </div>
-
-          {/* Streak */}
-          <div className="bg-white rounded-xl shadow-sm border p-3 md:p-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Chuỗi ngày học</span>
-              <Flame className="w-4 h-4 text-orange-500" />
-            </div>
-            <p className="text-xl md:text-2xl font-bold text-gray-900">
-              {profile.streakCount}
-            </p>
-            <p className="text-[11px] text-gray-500">
-              Ngày liên tiếp bạn đã duy trì luyện tập
-            </p>
-          </div>
-
-          {/* Hearts */}
-          <div className="bg-white rounded-xl shadow-sm border p-3 md:p-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Tim (cơ hội)</span>
-              <Heart className="w-4 h-4 text-rose-500" />
-            </div>
-            <p className="text-xl md:text-2xl font-bold text-gray-900">
-              {profile.heartCount}
-            </p>
-            <p className="text-[11px] text-gray-500">
-              Số lần sai bạn có thể “xài” trong một bài học
-            </p>
-          </div>
-
-          {/* Ngày tham gia */}
-          <div className="bg-white rounded-xl shadow-sm border p-3 md:p-4 flex flex-col gap-2">
-            <span className="text-xs font-medium text-gray-500">Tham gia từ</span>
-            <p className="text-sm font-semibold text-gray-900">
-              {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
-            </p>
-            <p className="text-[11px] text-gray-500">
-              Cảm ơn bạn đã đồng hành cùng nền tảng 💙
-            </p>
-          </div>
+          <StatCard icon={<Award />} label="Kinh nghiệm" value={profile.experiencePoint} />
+          <StatCard icon={<Flame />} label="Chuỗi ngày học" value={profile.streakCount} />
+          <StatCard icon={<Heart />} label="Tim" value={profile.heartCount} />
+          <StatCard
+            label="Tham gia từ"
+            value={new Date(profile.createdAt).toLocaleDateString('vi-VN')}
+          />
         </div>
 
-        {/* (Optional) chỗ để sau này gắn thêm lịch sử học, thành tích,... */}
+       
       </div>
     </div>
   );
 };
+
+const StatCard = ({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any;
+  icon?: React.ReactNode;
+}) => (
+  <div className="bg-white border rounded-xl p-4">
+    <div className="flex justify-between text-xs text-gray-500 mb-1">
+      <span>{label}</span>
+      {icon}
+    </div>
+    <p className="text-xl font-bold">{value}</p>
+  </div>
+);
 
 export default ProfilePage;

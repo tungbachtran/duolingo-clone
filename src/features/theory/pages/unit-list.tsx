@@ -72,7 +72,7 @@ const UnitList = () => {
                     className="bg-blue-500 hover:bg-blue-600"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/unit/${unit._id}/theories`);
+                      navigate(`/dashboard/course/unit/${unit._id}/theories`);
                     }}
                   >
                     Xem lý thuyết

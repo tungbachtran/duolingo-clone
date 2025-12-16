@@ -137,7 +137,7 @@ const UserMistakesPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
+            <div className="flex items-center justify-center min-h-screen ">
                 <Loader2 className="w-12 h-12 animate-spin text-blue-500" />
             </div>
         );
@@ -145,7 +145,7 @@ const UserMistakesPage = () => {
 
     if (isError || !data) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-red-50 to-white">
+            <div className="flex flex-col items-center justify-center min-h-screen ">
                 <p className="text-lg text-red-600 mb-2">Không thể tải danh sách câu sai</p>
                 <p className="text-sm text-gray-500">Vui lòng thử lại sau.</p>
             </div>
@@ -156,7 +156,7 @@ const UserMistakesPage = () => {
 
     if (!hasQuestions) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
+            <div className="flex flex-col items-center justify-center min-h-screen ">
                 <p className="text-xl text-gray-600 mb-2">Bạn chưa có câu sai nào 🎉</p>
                 <p className="text-sm text-gray-500">Tiếp tục luyện tập để giữ phong độ nhé!</p>
             </div>
@@ -164,7 +164,7 @@ const UserMistakesPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+        <div className="min-h-screen ">
             {/* Header */}
             <div className="sticky top-0 z-50 bg-white border-b shadow-sm">
                 <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">

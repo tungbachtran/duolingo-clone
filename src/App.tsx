@@ -6,6 +6,7 @@ import { UserProvider } from "./context/user.context";
 import { ProgressProvider } from "./context/progress.context";
 import { CourseProvider } from "./features/course/context/course.context";
 import { UserProgressProvider } from "./context/user-progress.context";
+import { CurrentCourseIdProvider } from "./context/current-course-id.context";
 
 function App() {
   const queryClient = new QueryClient();
@@ -15,10 +16,11 @@ function App() {
       <UserProvider>
         <ProgressProvider>
         <UserProgressProvider>
-        
+        <CurrentCourseIdProvider>
           <BrowserRouter>
             <IndexRoutes />
           </BrowserRouter>
+          </CurrentCourseIdProvider>
           </UserProgressProvider>
         </ProgressProvider>
       </UserProvider>

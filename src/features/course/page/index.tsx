@@ -6,17 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Search, GraduationCap } from "lucide-react";
 import { CourseCard } from "../components/course-card";
 import { useNavigate } from "react-router-dom";
-import { ROUTE } from "@/features/authentication/constants";
+
 import { useQuery } from '@tanstack/react-query';
 import { Spinner } from "@/components/ui/spinner";
+import { useCurrentCourseId } from "@/context/current-course-id.context";
+import { CourseActionType } from "@/reducer/course.reducer";
 
 export const CoursePage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const {data,isFetching} = useQuery({queryKey:['courses'],queryFn:getCourses})
+  const {dispatch} = useCurrentCourseId()
   const handleSelectCourse = (courseId: string) => {
-    navigate(ROUTE.DASHBOARD.replace(':courseId', courseId));
+    dispatch({type:CourseActionType.SET_COURSE_ID, payload:courseId})
+    navigate(`/dashboard/course/${courseId}`);
   };
 
   const filteredCourses = data?.filter(course =>

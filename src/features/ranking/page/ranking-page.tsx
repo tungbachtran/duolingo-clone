@@ -44,7 +44,7 @@ const LeaderboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-sky-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -69,7 +69,7 @@ const LeaderboardPage = () => {
       <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         {/* Card rank hiện tại của user */}
         {currentUserEntry && (
-          <div className="bg-gradient-to-r from-sky-500 to-indigo-500 rounded-2xl shadow-lg p-4 md:p-5 flex items-center justify-between text-white">
+          <div className="bg-green-400 rounded-2xl shadow-lg p-4 md:p-5 flex items-center justify-between text-white">
             <div className="flex items-center gap-4">
               <div className="relative">
                 {currentUserEntry.avatarImage ? (
@@ -214,7 +214,7 @@ const LeaderboardPage = () => {
                   key={item._id}
                   className={`flex items-center px-4 py-3 text-sm ${
                     isCurrentUser
-                      ? 'bg-sky-50 border-l-4 border-sky-400'
+                      ? 'bg-green-50 border-l-4 border-green-400'
                       : 'hover:bg-gray-50'
                   }`}
                 >
@@ -246,12 +246,12 @@ const LeaderboardPage = () => {
                     <div>
                       <p
                         className={`font-medium ${
-                          isCurrentUser ? 'text-sky-700' : 'text-gray-900'
+                          isCurrentUser ? 'text-green-400' : 'text-gray-900'
                         }`}
                       >
                         {item.fullName}
                         {isCurrentUser && (
-                          <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-semibold">
+                          <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full bg-sky-100 text-green-400 font-semibold">
                             Bạn
                           </span>
                         )}

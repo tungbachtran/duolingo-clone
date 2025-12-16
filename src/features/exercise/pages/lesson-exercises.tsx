@@ -24,11 +24,16 @@ import { useProgress } from '@/context/progress.context';
 import { ProgressActionType } from '@/reducer/progress.reducer';
 import { ROUTE } from '@/features/authentication/constants';
 import { useUserProgress } from '@/context/user-progress.context';
+import { updateUserProgress, type UpdateUserProgressForm } from '@/features/dashboard/services';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useUser } from '@/context/user.context';
+import { useCurrentCourseId } from '@/context/current-course-id.context';
 
 const LessonExercises = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
   const { courseId } = useUserProgress();
+    const{state:currentCourseId} = useCurrentCourseId();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
@@ -42,6 +47,16 @@ const LessonExercises = () => {
   const [retryQuestions, setRetryQuestions] = useState<Exercise[]>([]);
   const [isRetryPhase, setIsRetryPhase] = useState(false);
   const { state, dispatch } = useProgress();
+  const queryClient = useQueryClient();
+  const {refetchUser} = useUser();
+  const form:UpdateUserProgressForm = {
+    lessonId:state.lessonId,
+    unitId:state.unitId,
+    courseId:currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId,
+    experiencePoint:state.experiencePoint,
+    heartCount:state.heartCount
+  }
+  const {mutate} = useMutation({mutationFn:(form:UpdateUserProgressForm)=>updateUserProgress(form)})
   useEffect(() => {
     if (lessonId) {
       loadExercises();
@@ -92,9 +107,13 @@ const LessonExercises = () => {
     }
   };
 
-  const handleCheck = () => {
-    if (state.heartCount === 0 && courseId) {
-      navigate(ROUTE.DASHBOARD.replace(":courseId", courseId));
+  const handleCheck = async () => {
+    if (state.heartCount === 0 ) {
+      await mutate(form)
+      queryClient.invalidateQueries({queryKey:['unitsAndLessons']});
+      refetchUser()
+      navigate(`/dashboard/course/${currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId}`);
+      
     }
     if (!currentAnswer) return;
 

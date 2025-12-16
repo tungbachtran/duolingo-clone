@@ -3,23 +3,33 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { CustomTooltip } from "@/components/custom-tooltip";
 import { Star, Lock, Check, BookOpen } from "lucide-react";
-import type { Unit } from "../../services";
+import { getUnitAndLesson } from "../../services";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { useUser } from "@/context/user.context";
 
 
 
 
-interface LearningPathProps {
-  units?: Unit[];
-  isFetching:boolean
-}
-
-
-export const LearningPath: React.FC<LearningPathProps> = ({ units,isFetching }) => {
+export const LearningPath = () => {
   const [lessonId, setLessonId] = useState<string>("");
   const tooltipRef = useRef<HTMLDivElement | null>(null);
-
+  const params = useParams();
+  const {refetchUser} = useUser();
+  const queryClient = useQueryClient();
+  const { data, isFetching } = useQuery({
+    queryKey: ["unitsAndLessons", params.courseId],
+    queryFn: () => getUnitAndLesson(params.courseId),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false  });
+  useEffect(()=>{
+    
+  queryClient.invalidateQueries({queryKey:['unitsAndLessons']})
+  },[])
+  refetchUser()
+  const units = data?.value.data.result
   const handleClickLesson = (id: string) => {
     setLessonId((prev) => (prev === id ? "" : id));
   };
@@ -45,18 +55,18 @@ export const LearningPath: React.FC<LearningPathProps> = ({ units,isFetching }) 
     const positions = ['justify-start pl-24', 'justify-center', 'justify-end pr-24'];
     return positions[index % positions.length];
   };
-  
 
 
 
 
-  if(isFetching){
-    return(
+
+  if (isFetching) {
+    return (
       <>
-      <div className="flex justify-center items-center m-auto">
-        <h1>Đang tải</h1>
-        <Spinner/>
-      </div>
+        <div className="flex justify-center items-center m-auto">
+          <h1>Đang tải</h1>
+          <Spinner />
+        </div>
       </>
     )
   }
@@ -83,7 +93,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ units,isFetching }) 
                       </div>
                     </div>
                   </div>
-                  
+
                 </div>
               </div>
 
@@ -92,7 +102,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ units,isFetching }) 
                 {unit.lessons
                   .sort((a, b) => a.displayOrder - b.displayOrder)
                   .map((lesson, lessonIndex) => {
-                   
+
                     const positionClass = getPositionClass(lessonIndex);
 
                     return (
@@ -126,8 +136,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ units,isFetching }) 
                                   data={{
                                     _id: lesson._id,
                                     objective: lesson.objectives,
-                                    unitId:unit._id,
-                                    lessonPoint:lesson.experiencePoint,
+                                    unitId: unit._id,
+                                    lessonPoint: lesson.experiencePoint,
                                   }}
                                 />
                               </div>
@@ -225,12 +235,12 @@ export const LearningPath: React.FC<LearningPathProps> = ({ units,isFetching }) 
                 {/* Unit Complete Treasure */}
                 <div className="flex justify-center py-8">
                   <div className="relative group cursor-pointer">
-                   
+
                     <div className="relative bg-green-400 rounded-3xl p-6 shadow-2xl ">
                       <div className="text-6xl">🏆</div>
                     </div>
                     {/* Sparkles */}
-                   
+
                   </div>
                 </div>
               </div>

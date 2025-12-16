@@ -1,5 +1,5 @@
 import { apiConstant } from "@/features/authentication/constants"
-import { axiosInstance } from "../../config/axios"
+import { axiosInstance } from "@/config/axios"
 import type { Exercise } from "@/features/exercise/types/exercise.types"
 
 import type { Unit } from "@/features/course/types";

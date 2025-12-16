@@ -36,26 +36,24 @@ export const SidebarItem = ({
   // Check active - so sánh với path thực tế
   const isActive = location.pathname === actualPath;
   
-  // Disable nếu cần courseId nhưng không có
-  const isDisabled = dynamicPath && !courseId;
+ 
 
   const handleClick = async () => {
     if(id === 'logout'){
-      await mutation.mutate();
-      navigate(ROUTE.HOME);
+      await mutation.mutateAsync();
+
+
+      navigate(ROUTE.HOME, { replace: true });
       return
     }
-    if (isDisabled) {
-      console.warn(`Cannot navigate to ${label}: courseId is required`);
-      return;
-    }
+    
     navigate(actualPath);
   };
 
   return (
     <button
       onClick={handleClick}
-      disabled={isDisabled}
+
       className={`
         w-full flex items-center gap-3 px-4 py-3 rounded-xl
         transition-all duration-200 text-left
@@ -63,7 +61,7 @@ export const SidebarItem = ({
           ? 'bg-blue-100 border-2 border-blue-400' 
           : 'hover:bg-gray-100 border-2 border-transparent'
         }
-        ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+       
       `}
     >
       <Icon className={`w-6 h-6 ${color || 'text-gray-600'}`} />
@@ -73,9 +71,7 @@ export const SidebarItem = ({
       `}>
         {label}
       </span>
-      {isDisabled && (
-        <span className="ml-auto text-xs text-red-500">!</span>
-      )}
+      
     </button>
   );
 };

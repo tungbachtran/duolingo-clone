@@ -17,7 +17,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: getUserProfile,
-    refetchOnMount:true
+    refetchOnMount:true,
+    retry:1
   });
 
   const refetchUser = () => {

@@ -1,28 +1,22 @@
-import { useParams } from "react-router-dom";
+import { Outlet} from "react-router-dom";
 
-import { getUnitAndLesson } from "../services";
 
-import { LearningPath } from "../components/lesson-path/lesson-path";
 import { Sidebar } from "../components/sidebar/sidebar";
 import { Header } from "../components/header/header";
+import { useCurrentCourseId } from "@/context/current-course-id.context";
 
-import { useQuery } from "@tanstack/react-query";
+import { useUserProgress } from "@/context/user-progress.context";
 
 export const DashboardPage = () => {
-  const params = useParams();
+  const {state} = useCurrentCourseId();
+  const {courseId} = useUserProgress()
 
-  const { data, isFetching } = useQuery({
-    queryKey: ["unitsAndLessons", params.courseId],
-    queryFn: () => getUnitAndLesson(params.courseId),
-    refetchOnWindowFocus:false,
-    refetchOnMount:false
 
-  });
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar courseId={params.courseId} />
+      <Sidebar courseId={state.courseId.length > 0 ? state.courseId : courseId} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -30,11 +24,11 @@ export const DashboardPage = () => {
         <Header />
 
         {/* Content Area */}
-    
-          {/* Lesson Path */}
-          <div ><LearningPath units={data?.value.data.result} isFetching={isFetching} /></div>
 
-          
+        {/* Lesson Path */}
+        <div ><Outlet /></div>
+
+
 
       </div>
     </div>

@@ -35,8 +35,6 @@ export const Sidebar = ({ courseId }: SidebarProps) => {
           />
         ))}
       </nav>
-
-      {/* Premium CTA */}
      
     </aside>
   );

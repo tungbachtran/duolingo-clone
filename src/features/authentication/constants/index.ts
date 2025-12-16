@@ -96,7 +96,7 @@ export const ROUTE = {
     REGISTER:'/register',
     VERIFY_EMAIL:'/verify-email',
     FORGOT_PASSWORD:'/forgot-password',
-    DASHBOARD:'/dashboard/:courseId',
+    DASHBOARD:'/dashboard',
     CHANGE_PASWORD:'/change-password',
     COURSE:'/course',
     EXERCISE:'/lesson/:lessonId/exercises',

@@ -141,7 +141,7 @@ export const RegisterPage = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-12 bg-[var(--button-login-color)] hover:bg-[var(--button-login-color)] cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                className="w-full h-12 bg-green-400 hover:bg-[var(--button-login-color)] cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
               >
                 {REGISTER_FORM_TITLE.REGISTER}
               </Button>
