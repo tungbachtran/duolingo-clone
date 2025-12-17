@@ -39,23 +39,31 @@ const ResultScreen = ({ result, onRetry }: Props) => {
     experiencePoint:state.experiencePoint,
     heartCount:state.heartCount
   }
-  
-  const {mutate} = useMutation({mutationFn:(form:UpdateUserProgressForm)=>updateUserProgress(form)})
+  const cid = currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId;
+
+  const progressMutation = useMutation({
+    mutationFn: (form: UpdateUserProgressForm) => updateUserProgress(form),
+  });
   const mistakeMutation = useMutation({mutationFn:(form:PostUserMistakeForm) => postUserMistake(form)})
   const handleCompleteLesson = async ()=>{
-    await mutate(form)
-    queryClient.invalidateQueries({queryKey:['unitsAndLessons']});
-    refetchUser()
-    if(result.incorrectQuestions.length > 0){
-      const wrongAnswer = result.incorrectQuestions.map(item=>item._id);
-      const form ={
-        wrongAnswer : wrongAnswer
+   
+      // 1) ĐỢI update progress xong thật sự
+      await progressMutation.mutateAsync(form);
+    
+      // 2) Sau đó mới invalidate + (nếu muốn chắc chắn) refetch
+      await queryClient.invalidateQueries({ queryKey: ['unitsAndLessons', cid] });
+      await queryClient.refetchQueries({ queryKey: ['unitsAndLessons', cid] });
+    
+      // 3) refetch user sau khi progress đã update
+      await refetchUser();
+    
+      // 4) ghi sai thì mutate bình thường, không cần await
+      if (result.incorrectQuestions.length > 0) {
+        mistakeMutation.mutate({ wrongAnswer: result.incorrectQuestions.map(i => i._id) });
       }
-      mistakeMutation.mutate(form)
-    }
-    { if (currentCourseId.courseId.length > 0) { navigate(`/dashboard/course/${currentCourseId.courseId}`); } else {
-      navigate(`/dashboard/course/${courseId}`);
-    } }
+    
+      navigate(`/dashboard/course/${cid}`, { replace: true });
+    ;
   }
   const getPerformanceMessage = () => {
     if (percentage === 100) return { text: 'Hoàn hảo!', color: 'text-yellow-600', emoji: '🏆' };

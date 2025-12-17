@@ -6,7 +6,7 @@ import { Star, Lock, Check, BookOpen } from "lucide-react";
 import { getUnitAndLesson } from "../../services";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery,  } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useUser } from "@/context/user.context";
 
@@ -18,17 +18,19 @@ export const LearningPath = () => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const params = useParams();
   const {refetchUser} = useUser();
-  const queryClient = useQueryClient();
+
   const { data, isFetching } = useQuery({
     queryKey: ["unitsAndLessons", params.courseId],
     queryFn: () => getUnitAndLesson(params.courseId),
-    refetchOnWindowFocus: false,
-    refetchOnMount: false  });
-  useEffect(()=>{
+    gcTime:0,
+    staleTime:0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true  });
+ 
+    useEffect(() => {
+      refetchUser();
+    }, [refetchUser]);
     
-  queryClient.invalidateQueries({queryKey:['unitsAndLessons']})
-  },[])
-  refetchUser()
   const units = data?.value.data.result
   const handleClickLesson = (id: string) => {
     setLessonId((prev) => (prev === id ? "" : id));
