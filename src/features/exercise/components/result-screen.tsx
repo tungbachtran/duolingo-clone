@@ -10,7 +10,7 @@ import { updateUserProgress, type UpdateUserProgressForm } from '@/features/dash
 import { useNavigate } from 'react-router-dom';
 import { useUserProgress } from '@/context/user-progress.context';
 
-import { useUser } from '@/context/user.context';
+
 import { useCurrentCourseId } from '@/context/current-course-id.context';
 import { postUserMistake, type PostUserMistakeForm } from '@/features/wrong-answer/service';
 
@@ -30,7 +30,7 @@ const ResultScreen = ({ result, onRetry }: Props) => {
   const{state:currentCourseId} = useCurrentCourseId();
   const queryClient = useQueryClient();
   const {state } = useProgress();
-  const {refetchUser} = useUser();
+
   
   const form:UpdateUserProgressForm = {
     lessonId:state.lessonId,
@@ -54,8 +54,7 @@ const ResultScreen = ({ result, onRetry }: Props) => {
       await queryClient.invalidateQueries({ queryKey: ['unitsAndLessons', cid] });
       await queryClient.refetchQueries({ queryKey: ['unitsAndLessons', cid] });
     
-      // 3) refetch user sau khi progress đã update
-      await refetchUser();
+    
     
       // 4) ghi sai thì mutate bình thường, không cần await
       if (result.incorrectQuestions.length > 0) {

@@ -26,8 +26,8 @@ import { ROUTE } from '@/features/authentication/constants';
 import { useUserProgress } from '@/context/user-progress.context';
 import { updateUserProgress, type UpdateUserProgressForm } from '@/features/dashboard/services';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useUser } from '@/context/user.context';
 import { useCurrentCourseId } from '@/context/current-course-id.context';
+import { postUserMistake, type PostUserMistakeForm } from '@/features/wrong-answer/service';
 
 const LessonExercises = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
@@ -48,7 +48,7 @@ const LessonExercises = () => {
   const [isRetryPhase, setIsRetryPhase] = useState(false);
   const { state, dispatch } = useProgress();
   const queryClient = useQueryClient();
-  const {refetchUser} = useUser();
+
   const form:UpdateUserProgressForm = {
     lessonId:state.lessonId,
     unitId:state.unitId,
@@ -56,7 +56,9 @@ const LessonExercises = () => {
     experiencePoint:state.experiencePoint,
     heartCount:state.heartCount
   }
-  const {mutate} = useMutation({mutationFn:(form:UpdateUserProgressForm)=>updateUserProgress(form)})
+  const mutate = useMutation({mutationFn:(form:UpdateUserProgressForm)=>updateUserProgress(form)})
+  const mistakeMutation = useMutation({mutationFn:(form:PostUserMistakeForm) => postUserMistake(form)})
+  const cid = currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId;
   useEffect(() => {
     if (lessonId) {
       loadExercises();
@@ -108,13 +110,7 @@ const LessonExercises = () => {
   };
 
   const handleCheck = async () => {
-    if (state.heartCount === 0 ) {
-      await mutate(form)
-      queryClient.invalidateQueries({queryKey:['unitsAndLessons']});
-      refetchUser()
-      navigate(`/dashboard/course/${currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId}`);
-      
-    }
+    
     if (!currentAnswer) return;
 
     const currentExercise = isRetryPhase ? retryQuestions[currentIndex] : exercises[currentIndex];
@@ -141,7 +137,17 @@ const LessonExercises = () => {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async() => {
+    if (state.heartCount === 0 ) {
+       await mutate.mutateAsync(form)
+      await queryClient.invalidateQueries({ queryKey: ['unitsAndLessons', cid] });
+      await queryClient.refetchQueries({ queryKey: ['unitsAndLessons', cid] });
+      if (retryQuestions.length > 0) {
+        mistakeMutation.mutate({ wrongAnswer: retryQuestions.map(i => i._id) });
+      }
+      navigate(`/dashboard/course/${currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId}`);
+      
+    }
     const totalQuestions = isRetryPhase ? retryQuestions.length : exercises.length;
 
     if (currentIndex < totalQuestions - 1) {
@@ -254,6 +260,7 @@ const LessonExercises = () => {
     );
   }
 
+  
   if (showResult) {
     const result: ExerciseResult = {
       totalQuestions: exercises.length,
