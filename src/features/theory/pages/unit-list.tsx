@@ -43,7 +43,7 @@ const UnitList = () => {
             <Card
               key={unit._id}
               className="overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-              onClick={() => navigate(`/unit/${unit._id}/theories`)}
+              onClick={() => navigate(`/dashboard/course/unit/${unit._id}/theories`)}
             >
               <div className="relative h-48">
                 <img
