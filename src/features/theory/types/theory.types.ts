@@ -45,7 +45,6 @@ export interface PhraseTheory {
   unitId: string;
   phraseText: string;
   translation: string;
-  audio: string;
   displayOrder: number;
   typeTheory: 'phrase';
   updatedAt: string;

@@ -1,7 +1,6 @@
-// features/theory/components/phrase-card.tsx
-import { useState } from 'react';
+
 import { Card } from '@/components/ui/card';
-import { Volume2, MessageSquare } from 'lucide-react';
+import {  MessageSquare } from 'lucide-react';
 import type { PhraseTheory } from '../types/theory.types';
 
 interface Props {
@@ -9,16 +8,9 @@ interface Props {
 }
 
 const PhraseCard = ({ theory }: Props) => {
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const playAudio = () => {
-    if (theory.audio) {
-      const audio = new Audio(theory.audio);
-      setIsPlaying(true);
-      audio.play();
-      audio.onended = () => setIsPlaying(false);
-    }
-  };
+
+  
 
   return (
     <Card className="p-6 hover:shadow-lg transition-shadow">
@@ -40,16 +32,7 @@ const PhraseCard = ({ theory }: Props) => {
               {theory.translation}
             </p>
           </div>
-          <button
-            onClick={playAudio}
-            disabled={isPlaying}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white rounded-lg transition-colors"
-          >
-            <Volume2 className="w-5 h-5" />
-            <span className="font-medium">
-              {isPlaying ? 'Đang phát...' : 'Nghe phát âm'}
-            </span>
-          </button>
+        
         </div>
       </div>
     </Card>
