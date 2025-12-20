@@ -1,11 +1,10 @@
-// src/components/GoogleLoginButton.tsx
 import React from 'react';
 import { buildGoogleLoginUrl } from '@/features/authentication/utils/googleAuth'; 
 
 export const GoogleLoginButton: React.FC = () => {
   const handleLogin = () => {
     const url = buildGoogleLoginUrl();
-    window.location.href = url;  // redirect thẳng user lên Google
+    window.location.href = url;  
   };
 
   return (

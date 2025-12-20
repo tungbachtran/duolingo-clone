@@ -1,4 +1,4 @@
-// src/features/authentication/pages/VerifyEmailPage.tsx
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export const VerifyEmailPage = () => {
 
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 60 giây để nhập mã
+  const [timeLeft, setTimeLeft] = useState(60);
 
   useEffect(() => {
     if (!email) {
@@ -38,7 +38,7 @@ export const VerifyEmailPage = () => {
       return;
     }
 
-    // Countdown để về trang register sau 60 giây
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -54,7 +54,7 @@ export const VerifyEmailPage = () => {
   }, [email, navigate]);
 
   useEffect(() => {
-    // Countdown để resend
+  
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
@@ -73,7 +73,7 @@ export const VerifyEmailPage = () => {
 
   const handleSubmit = async (values: z.infer<typeof formVerifyEmailSchema>) => {
     const res = await verifyEmail(values);
-    
+
     if (res.success) {
       showToast(res.message, ToastType.SUCCESS);
       setTimeout(() => {
@@ -86,14 +86,14 @@ export const VerifyEmailPage = () => {
 
   const handleResend = async () => {
     if (!canResend) return;
-    
+
     const res = await resendVerificationCode(email);
-    
+
     if (res.success) {
       showToast(res.message, ToastType.SUCCESS);
       setCountdown(60);
       setCanResend(false);
-      setTimeLeft(60); // Reset thời gian nhập mã
+      setTimeLeft(60);
     } else {
       showToast(res.message, ToastType.ERROR);
     }
@@ -102,92 +102,90 @@ export const VerifyEmailPage = () => {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       {toast && <Toast message={toast.message} type={toast.type} />}
-      
+
       <div className="w-full max-w-md">
-    
-          {/* Header */}
-          <div className="text-center space-y-3">
-            <div className="w-20 h-20 bg-gradient-to-br  rounded-full mx-auto flex items-center justify-center">
-              <Mail className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-800">
-              {VERIFY_EMAIL_TITLE.HEADER}
-            </h1>
-            <p className="text-gray-600">
-              {VERIFY_EMAIL_TITLE.DESCRIPTION}
+
+
+        <div className="text-center space-y-3">
+          <div className="w-20 h-20 bg-gradient-to-br  rounded-full mx-auto flex items-center justify-center">
+            <Mail className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {VERIFY_EMAIL_TITLE.HEADER}
+          </h1>
+          <p className="text-gray-600">
+            {VERIFY_EMAIL_TITLE.DESCRIPTION}
+          </p>
+          <p className="text-blue-600 font-semibold">{email}</p>
+
+
+          <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-3">
+            <p className="text-yellow-700 font-semibold">
+              ⏱️ Thời gian còn lại: <span className="text-xl">{timeLeft}s</span>
             </p>
-            <p className="text-blue-600 font-semibold">{email}</p>
-            
-            {/* Countdown Timer */}
-            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-3">
-              <p className="text-yellow-700 font-semibold">
-                ⏱️ Thời gian còn lại: <span className="text-xl">{timeLeft}s</span>
-              </p>
-            </div>
           </div>
+        </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
-              {/* Code Field */}
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">
-                      {VERIFY_EMAIL_TITLE.CODE}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={VERIFY_EMAIL_TITLE.PLACE_HOLDER_CODE}
-                        {...field}
-                        maxLength={6}
-                        className="h-14 text-center text-2xl font-bold tracking-widest rounded-xl border-2 border-gray-200 focus:border-purple-500 transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
 
-              {/* Verify Button */}
-              <Button
-                type="submit"
-                className="w-full h-12 bg-green-400 hover:bg-var(--button-login-color) cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-              >
-                {VERIFY_EMAIL_TITLE.VERIFY}
-              </Button>
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-700 font-semibold">
+                    {VERIFY_EMAIL_TITLE.CODE}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={VERIFY_EMAIL_TITLE.PLACE_HOLDER_CODE}
+                      {...field}
+                      maxLength={6}
+                      className="h-14 text-center text-2xl font-bold tracking-widest rounded-xl border-2 border-gray-200 focus:border-purple-500 transition-colors"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500" />
+                </FormItem>
+              )}
+            />
 
-              {/* Resend Button */}
-              <Button
-                type="button"
-                onClick={handleResend}
-                disabled={!canResend}
-                className={`w-full h-12 rounded-xl font-semibold transition-all duration-200 ${
-                  canResend
-                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                    : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${canResend ? '' : 'opacity-50'}`} />
-                {canResend
-                  ? VERIFY_EMAIL_TITLE.RESEND
-                  : `${VERIFY_EMAIL_TITLE.RESEND_COUNTDOWN} ${countdown}s`}
-              </Button>
-            </form>
-          </Form>
 
-          {/* Footer */}
-          <div className="text-center pt-4 border-t border-gray-200">
-            <button
-              onClick={() => navigate('/register')}
-              className="text-gray-600 hover:text-gray-800 font-semibold flex items-center justify-center gap-2 mx-auto"
+            <Button
+              type="submit"
+              className="w-full h-12 bg-green-400 hover:bg-var(--button-login-color) cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
             >
-              <ArrowLeft className="w-4 h-4" />
-              {VERIFY_EMAIL_TITLE.BACK_TO_REGISTER}
-            </button>
-          </div>
-    
+              {VERIFY_EMAIL_TITLE.VERIFY}
+            </Button>
+
+
+            <Button
+              type="button"
+              onClick={handleResend}
+              disabled={!canResend}
+              className={`w-full h-12 rounded-xl font-semibold transition-all duration-200 ${canResend
+                ? 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                }`}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${canResend ? '' : 'opacity-50'}`} />
+              {canResend
+                ? VERIFY_EMAIL_TITLE.RESEND
+                : `${VERIFY_EMAIL_TITLE.RESEND_COUNTDOWN} ${countdown}s`}
+            </Button>
+          </form>
+        </Form>
+
+        <div className="text-center pt-4 border-t border-gray-200">
+          <button
+            onClick={() => navigate('/register')}
+            className="text-gray-600 hover:text-gray-800 font-semibold flex items-center justify-center gap-2 mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {VERIFY_EMAIL_TITLE.BACK_TO_REGISTER}
+          </button>
+        </div>
+
       </div>
     </div>
   );

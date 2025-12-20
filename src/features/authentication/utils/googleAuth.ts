@@ -1,7 +1,7 @@
-// src/utils/googleAuth.ts
+
 export const buildGoogleLoginUrl = () => {
-    const redirectUri = `${import.meta.env.VITE_API_URL}/api/auth/login-google`; // khớp với redirect URI config ở Google
-    const state = 'https://duolingo-clone-psi.vercel.app/course'; // hoặc '/dashboard', hoặc lưu route hiện tại
+    const redirectUri = `${import.meta.env.VITE_API_URL}/api/auth/login-google`; 
+    const state = 'https://duolingo-clone-psi.vercel.app/course'; 
   
     const params = new URLSearchParams({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
@@ -14,8 +14,8 @@ export const buildGoogleLoginUrl = () => {
       ].join(' '),
       access_type: 'offline',
       include_granted_scopes: 'true',
-      state,              // BE sẽ redirect về đây sau khi login xong
-      prompt: 'consent',  // hoặc 'select_account'
+      state,              
+      prompt: 'consent',  
     });
   
     return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;

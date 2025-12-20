@@ -68,7 +68,7 @@ export const LoginPage = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
-            {/* Email Field */}
+
             <FormField
               control={form.control}
               name="email"
@@ -92,7 +92,7 @@ export const LoginPage = () => {
               )}
             />
 
-            {/* Password Field */}
+
             <FormField
               control={form.control}
               name="password"
@@ -126,7 +126,6 @@ export const LoginPage = () => {
               )}
             />
 
-            {/* Submit Button */}
             <Button
               type="submit"
               className="w-full h-12 bg-green-400 hover:bg-var(--button-login-color-hover) text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
@@ -138,7 +137,7 @@ export const LoginPage = () => {
         <div>
           <div className="flex justify-center items-center mt-5"><GoogleLoginButton /></div>
         </div>
-        {/* Footer */}
+
         <div className="text-center pt-4  border-gray-200">
           <p className="text-gray-600">
             {LOGIN_FORM_TITLE.NO_ACCOUNT}

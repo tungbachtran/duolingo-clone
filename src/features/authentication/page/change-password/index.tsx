@@ -22,7 +22,7 @@ import {
 import { useToast, ToastType } from "@/hooks/useToast";
 import { Toast } from "@/components/ui/toast";
 import { useNavigate, useLocation } from "react-router-dom";
-import {  ArrowLeft} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { CHANGE_PASSWORD_TITLE } from "../../constants";
 
@@ -61,7 +61,7 @@ export const ChangePasswordPage = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <div className="w-full max-w-md">
-        {/* Header */}
+
         <div className="text-center space-y-3">
           <h1 className="text-3xl font-bold text-gray-800">
             {CHANGE_PASSWORD_TITLE.HEADER}
@@ -75,7 +75,7 @@ export const ChangePasswordPage = () => {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-5"
           >
-            {/* Code Field */}
+
             <FormField
               control={form.control}
               name="code"
@@ -119,7 +119,6 @@ export const ChangePasswordPage = () => {
               )}
             />
 
-            {/* Verify Button */}
             <Button
               type="submit"
               className="w-full h-12 bg-green-400 hover:bg-[var(--button-login-color)] cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
@@ -127,8 +126,7 @@ export const ChangePasswordPage = () => {
               {CHANGE_PASSWORD_TITLE.SUBMIT}
             </Button>
 
-            {/* Resend Button */}
-           
+
           </form>
         </Form>
 

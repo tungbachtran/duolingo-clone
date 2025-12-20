@@ -1,5 +1,5 @@
 // pages/lesson-exercises.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getLessonExercises } from '../services';
 import { Button } from '@/components/ui/button';
@@ -28,12 +28,13 @@ import { updateUserProgress, type UpdateUserProgressForm } from '@/features/dash
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCurrentCourseId } from '@/context/current-course-id.context';
 import { postUserMistake, type PostUserMistakeForm } from '@/features/wrong-answer/service';
-
+import correctMp3 from '@/assets/audio/correct.mp3';
+import wrongMp3 from '@/assets/audio/wrong.mp3';
 const LessonExercises = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
   const { courseId } = useUserProgress();
-    const{state:currentCourseId} = useCurrentCourseId();
+  const { state: currentCourseId } = useCurrentCourseId();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
@@ -49,15 +50,15 @@ const LessonExercises = () => {
   const { state, dispatch } = useProgress();
   const queryClient = useQueryClient();
 
-  const form:UpdateUserProgressForm = {
-    lessonId:state.lessonId,
-    unitId:state.unitId,
-    courseId:currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId,
-    experiencePoint:state.experiencePoint,
-    heartCount:state.heartCount
+  const form: UpdateUserProgressForm = {
+    lessonId: state.lessonId,
+    unitId: state.unitId,
+    courseId: currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId,
+    experiencePoint: state.experiencePoint,
+    heartCount: state.heartCount
   }
-  const mutate = useMutation({mutationFn:(form:UpdateUserProgressForm)=>updateUserProgress(form)})
-  const mistakeMutation = useMutation({mutationFn:(form:PostUserMistakeForm) => postUserMistake(form)})
+  const mutate = useMutation({ mutationFn: (form: UpdateUserProgressForm) => updateUserProgress(form) })
+  const mistakeMutation = useMutation({ mutationFn: (form: PostUserMistakeForm) => postUserMistake(form) })
   const cid = currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId;
   useEffect(() => {
     if (lessonId) {
@@ -65,6 +66,23 @@ const LessonExercises = () => {
     }
   }, [lessonId]);
 
+  const correctSound = useRef<HTMLAudioElement | null>(null);
+  const wrongSound = useRef<HTMLAudioElement | null>(null);
+  const playSound = async (audio: HTMLAudioElement | null) => {
+    if (!audio) return;
+    try {
+      audio.currentTime = 0;
+      await audio.play();
+    } catch (err) {
+      console.warn('Cannot play audio:', err);
+    }
+  };
+  useEffect(() => {
+    correctSound.current = new Audio(correctMp3);
+    wrongSound.current = new Audio(wrongMp3);
+    correctSound.current.preload = 'auto';
+    wrongSound.current.preload = 'auto';
+  }, []);
   const loadExercises = async () => {
     try {
       setLoading(true);
@@ -110,11 +128,13 @@ const LessonExercises = () => {
   };
 
   const handleCheck = async () => {
-    
+
     if (!currentAnswer) return;
 
     const currentExercise = isRetryPhase ? retryQuestions[currentIndex] : exercises[currentIndex];
     const correct = checkAnswer(currentAnswer);
+    if (correct) playSound(correctSound.current);
+    else playSound(wrongSound.current);
     const timeSpent = Date.now() - questionStartTime;
 
     setIsCorrect(correct);
@@ -137,16 +157,16 @@ const LessonExercises = () => {
     }
   };
 
-  const handleContinue = async() => {
-    if (state.heartCount === 0 ) {
-       await mutate.mutateAsync(form)
+  const handleContinue = async () => {
+    if (state.heartCount === 0) {
+      await mutate.mutateAsync(form)
       await queryClient.invalidateQueries({ queryKey: ['unitsAndLessons', cid] });
       await queryClient.refetchQueries({ queryKey: ['unitsAndLessons', cid] });
       if (retryQuestions.length > 0) {
         mistakeMutation.mutate({ wrongAnswer: retryQuestions.map(i => i._id) });
       }
       navigate(`/dashboard/course/${currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId}`);
-      
+
     }
     const totalQuestions = isRetryPhase ? retryQuestions.length : exercises.length;
 
@@ -260,7 +280,7 @@ const LessonExercises = () => {
     );
   }
 
-  
+
   if (showResult) {
     const result: ExerciseResult = {
       totalQuestions: exercises.length,

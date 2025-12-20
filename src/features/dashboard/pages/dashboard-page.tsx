@@ -15,17 +15,15 @@ export const DashboardPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
+
       <Sidebar courseId={state.courseId.length > 0 ? state.courseId : courseId} />
 
-      {/* Main Content */}
+
       <div className="flex-1 flex flex-col">
-        {/* Header */}
+
         <Header />
 
-        {/* Content Area */}
 
-        {/* Lesson Path */}
         <div ><Outlet /></div>
 
 
