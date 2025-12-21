@@ -64,7 +64,7 @@ const OrderingCard = ({ question, onOrderChange, isChecking, isCorrect }: Props)
                   key={index}
                   onClick={() => handleWordClick(word, false)}
                   disabled={isChecking}
-                  className="px-4 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="px-4 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-50"
                 >
                   {word}
                 </button>
@@ -88,8 +88,8 @@ const OrderingCard = ({ question, onOrderChange, isChecking, isCorrect }: Props)
         </div>
 
         {isChecking && !isCorrect && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-sm text-yellow-800">
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm text-green-800">
               <strong>Đáp án đúng:</strong> {question.exactFragmentText}
             </p>
           </div>

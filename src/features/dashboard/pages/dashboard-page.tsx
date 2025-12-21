@@ -1,4 +1,4 @@
-import { Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 
 import { Sidebar } from "../components/sidebar/sidebar";
@@ -8,8 +8,8 @@ import { useCurrentCourseId } from "@/context/current-course-id.context";
 import { useUserProgress } from "@/context/user-progress.context";
 
 export const DashboardPage = () => {
-  const {state} = useCurrentCourseId();
-  const {courseId} = useUserProgress()
+  const { state } = useCurrentCourseId();
+  const { courseId } = useUserProgress()
 
 
 

@@ -165,8 +165,8 @@ const LessonExercises = () => {
       if (retryQuestions.length > 0) {
         mistakeMutation.mutate({ wrongAnswer: retryQuestions.map(i => i._id) });
       }
-      navigate(`/dashboard/course/${currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId}`);
-
+      navigate(`/dashboard/course/${currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId}`,{state:'NO_HEART_LEFT'});
+      return;
     }
     const totalQuestions = isRetryPhase ? retryQuestions.length : exercises.length;
 
@@ -266,7 +266,7 @@ const LessonExercises = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
-        <Loader2 className="w-12 h-12 animate-spin text-blue-500" />
+        <Loader2 className="w-12 h-12 animate-spin text-green-500" />
       </div>
     );
   }

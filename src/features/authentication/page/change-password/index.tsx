@@ -130,7 +130,7 @@ export const ChangePasswordPage = () => {
           </form>
         </Form>
 
-        {/* Footer */}
+ 
         <div className="text-center pt-4 border-t border-gray-200">
           <button
             onClick={() => navigate("/login")}

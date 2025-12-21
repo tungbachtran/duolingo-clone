@@ -99,10 +99,10 @@ const MatchingCard = ({ question,  onMatchChange, isChecking, isCorrect }: Props
                     disabled={isChecking || !!matched}
                     className={`w-full p-4 rounded-lg border-2 font-medium text-left transition-all ${
                       matched
-                        ? 'bg-blue-100 border-blue-500 cursor-default'
+                        ? 'bg-green-100 border-green-500 cursor-default'
                         : isSelected
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-white border-gray-300 hover:border-blue-300'
+                        ? 'bg-green-500 text-white border-green-500'
+                        : 'bg-white border-gray-300 hover:border-green-300'
                     }`}
                   >
                     {item.value}
@@ -112,7 +112,7 @@ const MatchingCard = ({ question,  onMatchChange, isChecking, isCorrect }: Props
                     <button
                       onClick={() => handlePairClick(item.pairId, matched.pairId)}
                       disabled={isChecking}
-                      className="w-full p-4 rounded-lg border-2 border-blue-500 bg-blue-100 font-medium text-left"
+                      className="w-full p-4 rounded-lg border-2 border-green-500 bg-blue-100 font-medium text-left"
                     >
                       ↔ {matched.value}
                     </button>
@@ -137,8 +137,8 @@ const MatchingCard = ({ question,  onMatchChange, isChecking, isCorrect }: Props
                   disabled={isChecking}
                   className={`w-full p-4 rounded-lg border-2 font-medium text-left transition-all ${
                     isSelected
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-white border-gray-300 hover:border-blue-300'
+                      ? 'bg-green-500 text-white border-green-500'
+                      : 'bg-white border-gray-300 hover:border-green-300'
                   }`}
                 >
                   {item.value}

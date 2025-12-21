@@ -28,12 +28,12 @@ export const SidebarItem = ({
   const location = useLocation();
   const mutation = useMutation({mutationFn:()=>logout()});
 
-  // Tính toán path thực tế
+
   const actualPath = dynamicPath && courseId 
     ? dynamicPath(courseId) 
     : path || '#';
   
-  // Check active - so sánh với path thực tế
+
   const isActive = location.pathname === actualPath;
   
  
@@ -58,7 +58,7 @@ export const SidebarItem = ({
         w-full flex items-center gap-3 px-4 py-3 rounded-xl
         transition-all duration-200 text-left
         ${isActive 
-          ? 'bg-blue-100 border-2 border-blue-400' 
+          ? 'bg-green-100 border-2 border-green-400' 
           : 'hover:bg-gray-100 border-2 border-transparent'
         }
        
@@ -67,7 +67,7 @@ export const SidebarItem = ({
       <Icon className={`w-6 h-6 ${color || 'text-gray-600'}`} />
       <span className={`
         text-sm font-bold uppercase tracking-wide
-        ${isActive ? 'text-blue-600' : 'text-gray-600'}
+        ${isActive ? 'text-green-600' : 'text-gray-600'}
       `}>
         {label}
       </span>

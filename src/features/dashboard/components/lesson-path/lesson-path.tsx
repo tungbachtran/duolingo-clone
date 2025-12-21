@@ -7,8 +7,9 @@ import { getUnitAndLesson } from "../../services";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { useQuery,  } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "@/context/user.context";
+import { toast } from 'sonner';
 
 
 
@@ -18,7 +19,8 @@ export const LearningPath = () => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const params = useParams();
   const {refetchUser} = useUser();
-
+  const location = useLocation();
+  const navigate = useNavigate()
   const { data, isFetching } = useQuery({
     queryKey: ["unitsAndLessons", params.courseId],
     queryFn: () => getUnitAndLesson(params.courseId),
@@ -35,6 +37,14 @@ export const LearningPath = () => {
   const handleClickLesson = (id: string) => {
     setLessonId((prev) => (prev === id ? "" : id));
   };
+  useEffect(() => {
+    if (location.state === "NO_HEART_LEFT") {
+      toast.error("Bạn đã hết tim. Hãy quay lại vào ngày mai nhé");
+
+     
+      navigate(".", { replace: true, state: null });
+    }
+  }, [location.state, navigate]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -73,7 +83,9 @@ export const LearningPath = () => {
     )
   }
   return (
+    
     <div className="flex-1 overflow-y-auto ">
+     
       <div className="max-w-2xl mx-auto px-6 space-y-8">
         {units
           .sort((a, b) => a.displayOrder - b.displayOrder)

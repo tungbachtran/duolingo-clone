@@ -49,14 +49,13 @@ export const CustomTooltip = ({ data }: TooltipProps) => {
 
         <CardFooter className="flex-col gap-2">
           <Button
-            className="w-full cursor-pointer"
+            className="w-full cursor-pointer bg-green-400 text-white"
             onClick={() => onClickLesson(data._id)}
           >
             Làm bài tập
           </Button>
         </CardFooter>
 
-        {/* Mũi tên */}
         <div
           className="absolute -bottom-2 left-1/2 -translate-x-1/2 
                w-0 h-0 border-l-8 border-l-transparent 

@@ -82,13 +82,13 @@ const MultipleChoiceCard = ({ question, selectedAnswer, onAnswerChange, isChecki
             <button
               onClick={playAudio}
               disabled={isPlaying}
-              className="w-24 h-24 rounded-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+              className="w-24 h-24 rounded-full bg-green-500 hover:bg-green-600 disabled:bg-green-300 flex items-center justify-center shadow-lg transition-transform hover:scale-105"
             >
               <Volume2 className="w-12 h-12 text-white" />
             </button>
           )}
           {!isImage && !isAudio && (
-            <div className="text-4xl font-bold text-blue-600 bg-blue-50 px-12 py-8 rounded-lg">
+            <div className="text-4xl font-bold text-green-600 bg-green-50 px-12 py-8 rounded-lg">
               {question.mediaUrl}
             </div>
           )}

@@ -1,5 +1,5 @@
 // components/exercises/ResultScreen.tsx
-import type { ExerciseResult } from '../types/exercise.types'; 
+import type { ExerciseResult } from '../types/exercise.types';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trophy, Clock, Target, XCircle } from 'lucide-react';
@@ -26,42 +26,42 @@ const ResultScreen = ({ result, onRetry }: Props) => {
   const minutes = Math.floor(result.totalTime / 60000);
   const seconds = Math.floor((result.totalTime % 60000) / 1000);
   const navigate = useNavigate();
-  const{courseId} = useUserProgress();
-  const{state:currentCourseId} = useCurrentCourseId();
+  const { courseId } = useUserProgress();
+  const { state: currentCourseId } = useCurrentCourseId();
   const queryClient = useQueryClient();
-  const {state } = useProgress();
+  const { state } = useProgress();
 
-  
-  const form:UpdateUserProgressForm = {
-    lessonId:state.lessonId,
-    unitId:state.unitId,
-    courseId:currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId,
-    experiencePoint:state.experiencePoint,
-    heartCount:state.heartCount
+
+  const form: UpdateUserProgressForm = {
+    lessonId: state.lessonId,
+    unitId: state.unitId,
+    courseId: currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId,
+    experiencePoint: state.experiencePoint,
+    heartCount: state.heartCount
   }
   const cid = currentCourseId.courseId.length > 0 ? currentCourseId.courseId : courseId;
 
   const progressMutation = useMutation({
     mutationFn: (form: UpdateUserProgressForm) => updateUserProgress(form),
   });
-  const mistakeMutation = useMutation({mutationFn:(form:PostUserMistakeForm) => postUserMistake(form)})
-  const handleCompleteLesson = async ()=>{
-   
-      // 1) ĐỢI update progress xong thật sự
-      await progressMutation.mutateAsync(form);
-    
-      // 2) Sau đó mới invalidate + (nếu muốn chắc chắn) refetch
-      await queryClient.invalidateQueries({ queryKey: ['unitsAndLessons', cid] });
-      await queryClient.refetchQueries({ queryKey: ['unitsAndLessons', cid] });
-    
-    
-    
-      // 4) ghi sai thì mutate bình thường, không cần await
-      if (result.incorrectQuestions.length > 0) {
-        mistakeMutation.mutate({ wrongAnswer: result.incorrectQuestions.map(i => i._id) });
-      }
-    
-      navigate(`/dashboard/course/${cid}`, { replace: true });
+  const mistakeMutation = useMutation({ mutationFn: (form: PostUserMistakeForm) => postUserMistake(form) })
+  const handleCompleteLesson = async () => {
+
+    // 1) ĐỢI update progress xong thật sự
+    await progressMutation.mutateAsync(form);
+
+    // 2) Sau đó mới invalidate + (nếu muốn chắc chắn) refetch
+    await queryClient.invalidateQueries({ queryKey: ['unitsAndLessons', cid] });
+    await queryClient.refetchQueries({ queryKey: ['unitsAndLessons', cid] });
+
+
+
+    // 4) ghi sai thì mutate bình thường, không cần await
+    if (result.incorrectQuestions.length > 0) {
+      mistakeMutation.mutate({ wrongAnswer: result.incorrectQuestions.map(i => i._id) });
+    }
+
+    navigate(`/dashboard/course/${cid}`, { replace: true });
     ;
   }
   const getPerformanceMessage = () => {
@@ -115,7 +115,7 @@ const ResultScreen = ({ result, onRetry }: Props) => {
             <div className="bg-green-50 p-6 rounded-xl">
               <Trophy className="w-8 h-8 text-green-600 mx-auto mb-2" />
               <div className="text-3xl font-bold text-green-600">
-                {result.correctAnswers}/{result.totalQuestions}
+                {result.totalQuestions - result.incorrectQuestions.length}/{result.totalQuestions}
               </div>
               <div className="text-sm text-gray-600">Câu đúng</div>
             </div>
@@ -153,6 +153,7 @@ const ResultScreen = ({ result, onRetry }: Props) => {
               onClick={handleCompleteLesson}
               variant="outline"
               className="flex-1 py-6 text-lg font-bold"
+              disabled={progressMutation.isPending}
             >
               Tiếp theo
             </Button>

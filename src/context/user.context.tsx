@@ -13,7 +13,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
 
-  // Gọi API lấy user
   const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: getUserProfile,

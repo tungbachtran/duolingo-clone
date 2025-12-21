@@ -54,7 +54,7 @@ export const VerifyEmailPage = () => {
   }, [email, navigate]);
 
   useEffect(() => {
-  
+
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
@@ -119,9 +119,9 @@ export const VerifyEmailPage = () => {
           <p className="text-blue-600 font-semibold">{email}</p>
 
 
-          <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-3">
-            <p className="text-yellow-700 font-semibold">
-              ⏱️ Thời gian còn lại: <span className="text-xl">{timeLeft}s</span>
+          <div className="bg-green-400 border-2  rounded-xl p-3">
+            <p className="text-white font-semibold">
+              Thời gian còn lại: <span className="text-xl">{timeLeft}s</span>
             </p>
           </div>
         </div>
@@ -153,7 +153,7 @@ export const VerifyEmailPage = () => {
 
             <Button
               type="submit"
-              className="w-full h-12 bg-green-400 hover:bg-var(--button-login-color) cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+              className="w-full h-12 bg-green-400 hover:bg-green-500 cursor-pointer text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
             >
               {VERIFY_EMAIL_TITLE.VERIFY}
             </Button>

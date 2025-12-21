@@ -7,11 +7,12 @@ import { ProgressProvider } from "./context/progress.context";
 import { CourseProvider } from "./features/course/context/course.context";
 import { UserProgressProvider } from "./context/user-progress.context";
 import { CurrentCourseIdProvider } from "./context/current-course-id.context";
-
+import { Toaster } from "sonner";
 function App() {
   const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster position="top-center" richColors />
       <CourseProvider>
       <UserProvider>
         <ProgressProvider>
